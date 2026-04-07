@@ -1,0 +1,11 @@
+-- 測試存儲過程是否正常
+EXEC sp_insert_schedule 
+    @original_message = '測試訊息',
+    @schedule_time = GETDATE(),
+    @task_type = 'reminder',
+    @task_parameters = '{"test": true}',
+    @task_description = '測試排程',
+    @parsed_intent = '{"intent": "test"}',
+    @user_id = '6993952262',
+    @user_name = 'Bird Parrot',
+    @channel_id = '19:Sox62wdO17L8xais5cZjhDSMiEXNsni9syXcI0-ZKLM1@thread.tacv2';
