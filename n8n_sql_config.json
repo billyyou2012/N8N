@@ -1,0 +1,77 @@
+{
+  "n8n_microsoft_sql_configuration": {
+    "description": "SecretaryDB 資料庫連接設定 (AI_secretary 專案使用)",
+    "version": "1.0",
+    "last_updated": "2026-04-07",
+    
+    "connection_parameters": {
+      "host": "localhost",
+      "database": "SecretaryDB",
+      "user": "secretary_user",
+      "password": "SecretaryDB@2026",
+      "port": 1433,
+      "connection_timeout": 30000,
+      "encrypt": false,
+      "trust_server_certificate": true
+    },
+    
+    "n8n_node_configuration": {
+      "node_type": "n8n-nodes-base.microsoftSql",
+      "credentials_name": "Microsoft SQL account",
+      "operation": "executeQuery",
+      
+      "sample_queries": {
+        "get_pending_schedules": "EXEC sp_get_pending_schedules @limit = 10",
+        "update_status_executing": "EXEC sp_update_schedule_status @schedule_id = {{ $json.schedule_id }}, @new_status = 'executing'",
+        "update_status_completed": "EXEC sp_update_schedule_status @schedule_id = {{ $json.schedule_id }}, @new_status = 'completed', @execution_result = '{{ JSON.stringify($json).replace(/'/g, \"''\") }}'",
+        "update_status_failed": "EXEC sp_update_schedule_status @schedule_id = {{ $json.schedule_id }}, @new_status = 'failed', @error_message = '{{ ($json.error?.message || \"未知錯誤\").replace(/'/g, \"''\") }}'",
+        "insert_schedule": "EXEC sp_insert_schedule @original_message = '{{ $json.original_message }}', @schedule_time = '{{ $json.schedule_time }}', @task_type = '{{ $json.task_type }}', @task_parameters = '{{ JSON.stringify($json.task_parameters) }}', @task_description = '{{ $json.task_description }}', @parsed_intent = '{{ JSON.stringify($json.parsed_intent) }}', @user_id = '{{ $json.user_id }}', @user_name = '{{ $json.user_name }}', @channel_id = '{{ $json.channel_id }}'"
+      }
+    },
+    
+    "ai_agent_tool_configuration": {
+      "tool_name": "secretarydb",
+      "node_type": "n8n-nodes-base.microsoftSqlTool",
+      "operation": "executeQuery",
+      "query_template": "{{ $fromAI(\"query\").replace(/<[^>]*>?/gm, '') }}",
+      
+      "predefined_queries": {
+        "save_schedule": "EXEC sp_insert_schedule @original_message = '{original_message}', @schedule_time = '{schedule_time}', @task_type = '{task_type}', @task_parameters = '{task_parameters}', @task_description = '{task_description}', @parsed_intent = '{parsed_intent}', @user_id = '{user_id}', @user_name = '{user_name}', @channel_id = '{channel_id}'",
+        "check_schedules": "SELECT * FROM schedules WHERE user_id = '{user_id}' AND status = 'pending' ORDER BY schedule_time",
+        "cancel_schedule": "UPDATE schedules SET status = 'cancelled', updated_at = GETDATE() WHERE id = {schedule_id} AND user_id = '{user_id}'"
+      }
+    },
+    
+    "troubleshooting": {
+      "common_issues": [
+        {
+          "issue": "無法連線到 SQL Server",
+          "solution": "1. 確認 SQL Server 服務正在執行\n2. 檢查防火牆設定 (Port 1433)\n3. 驗證使用者名稱與密碼"
+        },
+        {
+          "issue": "權限不足",
+          "solution": "1. 確認 secretary_user 有執行儲存程序的權限\n2. 檢查資料表 SELECT/INSERT/UPDATE 權限"
+        },
+        {
+          "issue": "連接超時",
+          "solution": "1. 增加 connection_timeout 值\n2. 檢查網路連線品質\n3. 確認 SQL Server 資源充足"
+        }
+      ],
+      
+      "test_queries": [
+        "SELECT @@VERSION as sql_version",
+        "SELECT DB_NAME() as current_database",
+        "SELECT COUNT(*) as schedule_count FROM schedules",
+        "SELECT COUNT(*) as log_count FROM execution_logs"
+      ]
+    },
+    
+    "migration_notes": {
+      "from_test_to_production": "1. 變更密碼為更複雜的字串\n2. 啟用加密連線 (encrypt=true)\n3. 設定適當的備份策略\n4. 啟用資料庫稽核功能",
+      
+      "backup_script": "BACKUP DATABASE SecretaryDB TO DISK = 'C:\\Backup\\SecretaryDB_$(Get-Date -Format 'yyyyMMdd_HHmmss').bak' WITH COMPRESSION, STATS = 5",
+      
+      "restore_script": "RESTORE DATABASE SecretaryDB FROM DISK = 'C:\\Backup\\SecretaryDB_backup.bak' WITH REPLACE, STATS = 5"
+    }
+  }
+}
