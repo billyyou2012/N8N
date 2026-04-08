@@ -1,25 +1,75 @@
--- 這只是「查看」，不是「寫入」！
+-- ============================================
+-- AI Secretary 儲存程序測試腳本 (珠珢提供)
+-- ============================================
+
+-- 1. 首先檢查 schedules 表結構（確保格式正確）
 SELECT 
-    SPECIFIC_NAME as procedure_name,
-    ROUTINE_TYPE as procedure_type
-FROM information_schema.routines
-WHERE SPECIFIC_NAME LIKE '%insert_schedule%' 
-   OR SPECIFIC_NAME LIKE '%schedule%';
-第二步：檢查schedules表結構
-Copy
-SELECT * FROM information_schema.tables 
-WHERE table_name = 'schedules' 
-   AND table_schema = 'dbo';
-第三步：手動測試儲存程序
-Copy
--- 測試能否執行
+    COLUMN_NAME as 欄位名稱,
+    DATA_TYPE as 資料類型,
+    IS_NULLABLE as 允許空值,
+    CHARACTER_MAXIMUM_LENGTH as 最大長度
+FROM information_schema.columns
+WHERE TABLE_NAME = 'schedules'
+ORDER BY ORDINAL_POSITION;
+
+-- 2. 測試 sp_insert_schedule - 插入一筆測試排程
+PRINT '=== 測試 sp_insert_schedule ===';
+
+DECLARE @test_schedule_id INT;
+
 EXEC sp_insert_schedule 
-    @original_message = '測試訊息',
-    @schedule_time = '2026-04-08 10:30:00',
+    @original_message = '測試: 明天下午三點開會討論AI專案',
+    @schedule_time = '2026-04-09 15:00:00',
     @task_type = 'reminder',
-    @task_parameters = '{}',
-    @task_description = '測試排程',
-    @parsed_intent = '{}',
-    @user_id = 'test_user',
+    @task_parameters = '{"meeting_topic": "AI專案進度會議", "participants": ["團隊成員"]}',
+    @task_description = 'AI專案進度會議提醒',
+    @parsed_intent = '{"intent": "schedule_meeting", "time": "明天下午三點", "topic": "開會討論AI專案"}',
+    @user_id = 'test_user_001',
     @user_name = '測試用戶',
-    @channel_id = 'test_channel';
+    @channel_id = '19:Sox62wdO17L8xais5cZjhDSMiEXNsni9syXcI0-ZKLM1@thread.tacv2',
+    @schedule_id = @test_schedule_id OUTPUT;
+
+PRINT '插入的排程ID: ' + CAST(@test_schedule_id AS VARCHAR(10));
+
+-- 3. 查看剛插入的排程
+SELECT TOP 3 * FROM schedules ORDER BY created_at DESC;
+
+-- 4. 測試 sp_get_pending_schedules - 取得待處理排程
+PRINT '=== 測試 sp_get_pending_schedules ===';
+
+DECLARE @pending_schedules TABLE (
+    id INT,
+    record_uuid NVARCHAR(50),
+    schedule_time DATETIME,
+    task_type NVARCHAR(50),
+    task_description NVARCHAR(MAX),
+    user_name NVARCHAR(100)
+);
+
+INSERT INTO @pending_schedules
+EXEC sp_get_pending_schedules @lookahead_minutes = 1440; -- 查看未來24小時
+
+SELECT * FROM @pending_schedules;
+
+-- 5. 測試 sp_update_schedule_status - 更新狀態
+PRINT '=== 測試 sp_update_schedule_status ===';
+
+DECLARE @update_result INT;
+
+EXEC sp_update_schedule_status 
+    @schedule_id = @test_schedule_id,
+    @new_status = 'executing',
+    @execution_result = NULL,
+    @rows_affected = @update_result OUTPUT;
+
+PRINT '更新狀態影響行數: ' + CAST(@update_result AS VARCHAR(10));
+
+-- 6. 確認狀態已更新
+SELECT id, schedule_time, task_type, status, updated_at 
+FROM schedules 
+WHERE id = @test_schedule_id;
+
+-- 7. 清理測試數據（可選）
+-- PRINT '=== 清理測試數據 ===';
+-- DELETE FROM schedules WHERE id = @test_schedule_id;
+-- PRINT '已刪除測試排程: ' + CAST(@test_schedule_id AS VARCHAR(10));
