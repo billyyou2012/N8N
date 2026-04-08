@@ -1,0 +1,25 @@
+-- 這只是「查看」，不是「寫入」！
+SELECT 
+    SPECIFIC_NAME as procedure_name,
+    ROUTINE_TYPE as procedure_type
+FROM information_schema.routines
+WHERE SPECIFIC_NAME LIKE '%insert_schedule%' 
+   OR SPECIFIC_NAME LIKE '%schedule%';
+第二步：檢查schedules表結構
+Copy
+SELECT * FROM information_schema.tables 
+WHERE table_name = 'schedules' 
+   AND table_schema = 'dbo';
+第三步：手動測試儲存程序
+Copy
+-- 測試能否執行
+EXEC sp_insert_schedule 
+    @original_message = '測試訊息',
+    @schedule_time = '2026-04-08 10:30:00',
+    @task_type = 'reminder',
+    @task_parameters = '{}',
+    @task_description = '測試排程',
+    @parsed_intent = '{}',
+    @user_id = 'test_user',
+    @user_name = '測試用戶',
+    @channel_id = 'test_channel';
