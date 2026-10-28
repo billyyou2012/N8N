@@ -1,0 +1,88 @@
+C:\Users\billyy>plink f65765@10.76.191.171 -pw 444password
+Using username "f65765".
+Access granted. Press Return to begin session.
+Last login: Wed Oct 28 13:11:30 2026 from 172.18.39.94
+Oracle Corporation      SunOS 5.10      Generic Patch   January 2005
+f65765@n1osscx1:~$ ssh f65765@10.76.217.22 -pw 555P@ssword
+Bad port 'w'
+f65765@n1osscx1:~$
+f65765@n1osscx1:~$
+f65765@n1osscx1:~$ ssh f65765@10.76.217.22
+This computer system is for authorized use only
+f65765@10.76.217.22's password:
+IF YOU ARE NOT AN AUTHORIZED USER, PLEASE EXIT IMMEDIATELY.
+Last failed login: Wed Oct 28 15:25:33 CST 2026 from 10.76.191.71 on ssh:notty
+There were 2 failed login attempts since the last successful login.
+Last login: Fri Sep 11 12:33:35 2026 from 10.76.191.171
+[33mWARNING!!! [37m<13>Oct 28 15:26:37 f65765: You must SSH using username and password to schedule CRON jobs.
+(B[m
+[f65765@svc-2-scripting(enmseo) ~]$ amos LS722122
+<13>Oct 28 15:26:54 EMGUI_CREDENTIALS: info ( /usr/local/bin/ssucredentials.sh ): The SLS certificate is already present and is valid for next 24 hours
+
+                        __  __  ____   _____
+                  /\   |  \/  |/ __ \ / ____|
+                 /  \  | \  / | |  | | (___
+                / /\ \ | |\/| | |  | |\___ \
+               / ____ \| |  | | |__| |____) |
+              /_/    \_\_|  |_|\____/|_____/
+              OSS Framework for MoShell-25.0n
+  Copyright (c) Ericsson AB 2001-2025 - All Rights Reserved
+
+
+[1;31mWARNING: [0mthe AMOS version currently running is more than 61 weeks old and is unsupported.
+Please upgrade as soon as possible to the latest released version, available from your local Ericsson support.
+
+$amosrb_pid = 3561643
+
+Checking ip contact...OK
+
+HELP MENU            : h
+BASIC MO COMMANDS    : m
+OTHER MO COMMANDS    : n
+OTHER COMMANDS       : o
+PM COMMANDS          : p
+QUIT                 : q
+]0;LS722122 - AMOS - Stopfile=/tmp/3561589
+[1mLS722122[0m> LT ALL
+
+261028-15:27:05+0800 10.49.211.97 25.0n  stopfile=/tmp/3561589
+Trying rbs's password from uservariable com_passwords ...OK
+
+Number of Failed login attempt(s): 0
+Last Successful login: 2026-10-28 07:20:28 from 10.76.215.121
+
+$ssh_pid = 3562086
+
+]0;LS722122 - AMOS - Stopfile=/tmp/3561589Connected to 10.49.211.97 (SubNetwork=FET,SubNetwork=4G,SubNetwork=SEO,MeContext=LS722122,ManagedElement=LS722122)
+
+Checking MOM version...MSRBS_NODE_MODEL_25.Q2_198665.256.75_bc97
+STParsing MOM (cached): /ericsson/log/amos/moshell_logfiles/f65765/logs_moshell/tempfiles/svc-2-scripting_20261028-152654_3561513/MSRBS_NODE_MODEL_25.Q2_198665.256.75_bc97.xml.cache.gz ................................ .........................................................................................................................................................................^H..............Done.
+^H^H^H^HUsing paramfile /opt/ericsson/amos/moshell/commonjars/pm/PARAM_MSRBSG2_25.Q2.txt
+Parsing file /opt/ericsson/amos/moshell/commonjars/pm/PARAM_MSRBSG2_25.Q2.txt .................^H..................^H..................^H...................................Done.
+Using imomdfile /opt/ericsson/amos/moshell/commonjars/pm/IMOMD_MSRBS_22.Q4.txt
+Using imomfile /opt/ericsson/amos/moshell/commonjars/pm/IMOM_MSRBS_25.Q2.txt
+^H^H]0;LS722122 - AMOS - Stopfile=/tmp/3561589
+===========================================================================================================
+WARNING: This system is restricted solely to authorized users for legitimate business purposes only. The actual or attempted unauthorized access, use, or modification of this system is strictly prohibited. Unauthorized users are subject to appropriate disciplinary proceedings and/or criminal and civil penalties under state, federal, or other applicable domestic and foreign laws. The use of this system may be monitored and recorded for administrative and security reasons. Anyone accessing this system expressly consents to such monitoring and is advised that if monitoring reveals possible evidence of criminal activity, the owner of this equipment may provide the evidence of such activity to law enforcement officials. All authorized users shall comply with the security policies, instructions and requirements related to the business purpose and in case of doubt shall seek advice from his/her manager.
+-----------------------------------------------------------------------------------------------------------
+The misuse of personal data may generate considerable harm to the data subjects. Be reminded of the confidentiality obligations you have when accessing this kind of data and the disciplinary consequences of improper handling.
+===========================================================================================================
+
+^H^H^HConnected to 10.49.211.97 (SubNetwork=FET,SubNetwork=4G,SubNetwork=SEO,MeContext=LS722122,ManagedElement=LS722122)
+ALT
+
+Last MO: 19913. Loaded 19913 MOs. Total: 19914 MOs.
+
+[1;32mLS722122[0m> ALT
+
+261028-15:27:21+0800 10.49.211.97 25.0n MSRBS_NODE_MODEL_25.Q2_198665.256.75_bc97 stopfile=/tmp/3561589
+
+Collecting Alarms...
+
+====================================================================================================================
+Date & Time (UTC)   S Specific Problem                    MO (AdditionalText/PC, AI)
+====================================================================================================================
+2026-10-28 06:45:49 m External Link to GNodeB Failure     ENodeBFunction=1 (X2 link problem to one or several neighbouring gNodeBs. AI: PLMN ID-gNB ID 1 : 4661-41000047)
+>>> Total: 1 Alarms (0 Critical, 0 Major)
+
+[1;32mLS722122[0m>
